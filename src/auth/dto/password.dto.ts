@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsEmail,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 import { ApiResponse, MessageResponse } from 'kulipal-shared';
 
 export class ForgotPasswordDto {
@@ -36,7 +30,7 @@ export class ValidateTokenResponseDto implements ValidateTokenApiResponse {
   message: string;
   statusCode: number;
   success: boolean;
-  isValid: true;
+  isValid: boolean;
 }
 
 export class ResetPasswordDto {
@@ -48,6 +42,19 @@ export class ResetPasswordDto {
 export type ResetPasswordApiResponse = MessageResponse & ApiResponse;
 
 export class ResetPasswordResponseDto implements ResetPasswordApiResponse {
+  message: string;
+  statusCode: number;
+  success: boolean;
+}
+
+export class ChangePasswordDto {
+  @IsString() currentPassword: string;
+  @IsString() newPassword: string;
+}
+
+export type ChangePasswordApiResponse = MessageResponse & ApiResponse;
+
+export class ChangePasswordResponseDto implements ChangePasswordApiResponse {
   message: string;
   statusCode: number;
   success: boolean;

@@ -3,13 +3,15 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto, LoginResponseDto, RefreshTokenDto } from './dto/login.dto';
 import { RegisterDto, RegisterResponseDto } from './dto/register.dto';
 import {
+  ChangePasswordDto,
+  ChangePasswordResponseDto,
   ForgotPasswordDto,
   ForgotPasswordResponseDto,
   ResetPasswordDto,
   ResetPasswordResponseDto,
   ValidateTokenDto,
   ValidateTokenResponseDto,
-} from './dto/forgot-password.dto';
+} from './dto/password.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -61,6 +63,7 @@ export class AuthController {
   @ApiOkResponse({
     description:
       'If an account with that email exists, you will receive instructions to reset your password.',
+    type: ForgotPasswordResponseDto,
   })
   async forgotPassword(
     @Body() _: ForgotPasswordDto,
@@ -76,7 +79,10 @@ export class AuthController {
   @Post('password/validate-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Validate password reset token' })
-  @ApiOkResponse({ description: 'Password reset token is valid' })
+  @ApiOkResponse({
+    description: 'Password reset token is valid',
+    type: ValidateTokenResponseDto,
+  })
   async validateToken(
     @Body() _: ValidateTokenDto,
   ): Promise<ValidateTokenResponseDto> {
@@ -91,12 +97,32 @@ export class AuthController {
   @Post('password/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset user password' })
-  @ApiOkResponse({ description: 'Password has been reset successfully' })
+  @ApiOkResponse({
+    description: 'Password has been reset successfully',
+    type: ResetPasswordResponseDto,
+  })
   async resetPassword(
     @Body() _: ResetPasswordDto,
   ): Promise<ResetPasswordResponseDto> {
     return {
       message: 'Password has been reset successfully',
+      statusCode: HttpStatus.OK,
+      success: true,
+    };
+  }
+
+  @Post('password/change')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiOkResponse({
+    description: 'Password has been changed successfully',
+    type: ChangePasswordResponseDto,
+  })
+  async changePassword(
+    @Body() _: ChangePasswordDto,
+  ): Promise<ChangePasswordResponseDto> {
+    return {
+      message: 'Password has been changed successfully',
       statusCode: HttpStatus.OK,
       success: true,
     };
