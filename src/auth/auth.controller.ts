@@ -1,5 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LoginDto, LoginResponseDto, RefreshTokenDto } from './dto/login.dto';
 import { RegisterDto, RegisterResponseDto } from './dto/register.dto';
 import {
@@ -18,6 +23,25 @@ import {
 export class AuthController {
   @ApiOperation({ summary: 'Login user with email and password credentials' })
   @Post('login')
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Login was successful',
+    type: LoginResponseDto,
+    links: {
+      refreshToken: {
+        operationId: 'RefreshToken',
+        parameters: {
+          refreshToken: '$response.body#/credentials/refreshToken',
+          accessToken: '$response.body#/credentials/accessToken',
+        },
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
   async login(@Body() _: LoginDto): Promise<LoginResponseDto> {
     return {
       message: 'Login was successful',
@@ -33,6 +57,16 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Refresh access token' })
   @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Token refreshed successfully',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Invalid refresh token',
+  })
   async refreshToken(@Body() _: RefreshTokenDto): Promise<LoginResponseDto> {
     return {
       message: 'Token refreshed successfully',
@@ -49,6 +83,19 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new user' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User registration successful',
+    type: RegisterResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'User registration failed',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'User already exists',
+  })
   async register(@Body() _: RegisterDto): Promise<RegisterResponseDto> {
     return {
       message: 'User registration successful',
