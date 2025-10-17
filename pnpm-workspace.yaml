@@ -1,0 +1,2 @@
+overrides:
+  kulipal-shared: link:../../../../Library/pnpm/global/5/node_modules/kulipal-shared
